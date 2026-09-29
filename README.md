@@ -1,50 +1,35 @@
 # MoodRecommender 🎬🎵📺
 
-MoodRecommender es un proyecto de Python que recomienda películas, series o música según el estado de ánimo y el tiempo disponible.
+MoodRecommender es una página web interactiva que recomienda películas, series o música según tu estado de ánimo y el tiempo disponible.
 
-## Versiones
+## 🌐 Versión pública
 
-### 🐍 Consola
-El archivo `main.py` contiene la primera versión del proyecto para practicar:
+La página está preparada para publicarse con **GitHub Pages** y quedar disponible mediante un enlace HTTPS:
 
-- `print()`
-- `input()`
-- Variables
-- `if / elif / else`
-- Listas
-- Diccionarios
-- `random`
+**https://juniorma2710.github.io/Proyecto-1-MoodRecommender/**
 
-### 🌐 Página web
-La versión web usa **Flask** y está formada por:
+La web pública es completamente estática: funciona con HTML, CSS y JavaScript, así que los visitantes no necesitan Codespaces, Python ni iniciar sesión en GitHub.
 
-- `app.py`: lógica de Python y servidor web.
-- `templates/index.html`: interfaz de la página.
-- `static/style.css`: diseño visual.
-- `requirements.txt`: dependencia necesaria.
+## 🧠 Cómo funciona
 
-## Cómo ejecutar la página en Codespaces
+1. El usuario elige cómo se siente.
+2. Elige entre película, serie o música.
+3. Elige cuánto tiempo tiene.
+4. JavaScript filtra las opciones.
+5. Se muestra una recomendación aleatoria con título, género, duración, descripción e imagen.
 
-Primero instala Flask:
+## 📁 Archivos principales
 
-```bash
-pip install -r requirements.txt
-```
+- `index.html`: página pública.
+- `static/style.css`: diseño moderno y responsive.
+- `static/site.js`: lógica de recomendaciones e interacción.
+- `static/images/`: ilustraciones de películas, series y música.
+- `app.py`: versión Python/Flask para seguir aprendiendo backend.
+- `main.py`: versión inicial de consola.
+- `.github/workflows/pages.yml`: despliegue automático con GitHub Pages.
 
-Después ejecuta:
+## 🛠️ Publicación
 
-```bash
-python app.py
-```
+El repositorio incluye un workflow de GitHub Actions que publica el contenido estático en GitHub Pages cada vez que se actualiza la rama `main`.
 
-Codespaces debería mostrar un aviso para abrir el puerto de la aplicación. Selecciona **Open in Browser**.
-
-La aplicación se ejecuta normalmente en el puerto **5000**.
-
-## Próximos pasos
-
-- Agregar imágenes para las recomendaciones.
-- Mostrar una descripción de cada película, serie o canción.
-- Mejorar el diseño.
-- Agregar más estados de ánimo.
-- Crear recomendaciones más personalizadas.
+Para la cuenta gratuita, el repositorio debe ser público para usar GitHub Pages.
