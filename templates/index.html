@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodRecommender</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">🎬 🎵 📺 TU RECOMENDADOR</p>
+            <h1>MoodRecommender</h1>
+            <p>Cuéntame cómo te sientes, cuánto tiempo tienes y qué quieres ver o escuchar.</p>
+        </section>
+
+        <form method="POST" class="card">
+            <div class="question">
+                <h2>1. ¿Cómo te sientes?</h2>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="animo" value="feliz" required>
+                        <span>😊 Feliz</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="animo" value="triste">
+                        <span>😌 Tranquilo / triste</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="animo" value="energia">
+                        <span>⚡ Con energía</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="animo" value="concentrarme">
+                        <span>🧠 Quiero concentrarme</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h2>2. ¿Qué quieres?</h2>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="tipo" value="peliculas" required>
+                        <span>🎬 Película</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="tipo" value="series">
+                        <span>📺 Serie</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="tipo" value="musica">
+                        <span>🎵 Música</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h2>3. ¿Cuánto tiempo tienes?</h2>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="tiempo" value="30" required>
+                        <span>⏱️ 30 minutos</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="tiempo" value="60">
+                        <span>🕐 1 hora</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="tiempo" value="120">
+                        <span>🕑 2 horas o más</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit">✨ Recomiéndame algo</button>
+        </form>
+
+        {% if recomendacion %}
+        <section class="result">
+            <p class="result-label">🎯 TU RECOMENDACIÓN</p>
+            <h2>{{ recomendacion.titulo }}</h2>
+            <p>⏱️ Duración aproximada: <strong>{{ recomendacion.duracion }} minutos</strong></p>
+            <p class="result-message">¡Disfruta tu recomendación!</p>
+        </section>
+        {% endif %}
+
+        {% if mensaje %}
+        <section class="message">
+            {{ mensaje }}
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>
