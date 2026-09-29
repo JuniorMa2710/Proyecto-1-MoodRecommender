@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070a12">
+  <title>MoodRecommender ✦</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="container">
+    <header class="hero">
+      <div class="logo">M✦</div>
+      <p class="eyebrow">PERSONAL ENTERTAINMENT MATCHER</p>
+      <h1>¿Qué te provoca <span>hoy?</span></h1>
+      <p class="hero-text">Dime tu mood, qué quieres disfrutar y cuánto tiempo tienes. Nosotros hacemos el resto.</p>
+    </header>
+
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span id="step-label">Paso 1 de 3</span>
+        <span id="progress-percent">33%</span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+
+    <form class="card" id="recommendation-form">
+      <section class="question step active" data-step="1">
+        <div class="question-heading">
+          <div class="number">01</div>
+          <div><p class="mini-label">MODO</p><h2>¿Cómo te sientes?</h2></div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="animo" value="feliz"><span><strong>😊 Feliz</strong><small>Quiero pasarla bien</small></span></label>
+          <label class="option"><input type="radio" name="animo" value="tranquilo"><span><strong>🌙 Tranquilo</strong><small>Algo relajado y reconfortante</small></span></label>
+          <label class="option"><input type="radio" name="animo" value="energia"><span><strong>⚡ Con energía</strong><small>Quiero algo intenso</small></span></label>
+          <label class="option"><input type="radio" name="animo" value="concentrarme"><span><strong>🧠 Concentrarme</strong><small>Quiero una vibra tranquila</small></span></label>
+        </div>
+        <button type="button" class="next-btn">Continuar →</button>
+      </section>
+
+      <section class="question step" data-step="2">
+        <div class="question-heading">
+          <div class="number">02</div>
+          <div><p class="mini-label">FORMATO</p><h2>¿Qué quieres disfrutar?</h2></div>
+        </div>
+        <div class="options big-options">
+          <label class="option type-option"><input type="radio" name="tipo" value="peliculas"><span><b>🎬</b><strong>Película</strong><small>Una historia completa</small></span></label>
+          <label class="option type-option"><input type="radio" name="tipo" value="series"><span><b>📺</b><strong>Serie</strong><small>Un episodio para empezar</small></span></label>
+          <label class="option type-option"><input type="radio" name="tipo" value="musica"><span><b>🎵</b><strong>Música</strong><small>Algo para escuchar</small></span></label>
+        </div>
+        <div class="button-row"><button type="button" class="back-btn">← Atrás</button><button type="button" class="next-btn">Continuar →</button></div>
+      </section>
+
+      <section class="question step" data-step="3">
+        <div class="question-heading">
+          <div class="number">03</div>
+          <div><p class="mini-label">TIEMPO</p><h2>¿Cuánto tiempo tienes?</h2></div>
+        </div>
+        <div class="options time-options">
+          <label class="option"><input type="radio" name="tiempo" value="30"><span><strong>⏱ 30 min</strong><small>Algo rápido</small></span></label>
+          <label class="option"><input type="radio" name="tiempo" value="60"><span><strong>🕐 1 hora</strong><small>Una sesión corta</small></span></label>
+          <label class="option"><input type="radio" name="tiempo" value="all"><span><strong>🕑 2 horas o más</strong><small>Sin prisa</small></span></label>
+        </div>
+        <div class="button-row"><button type="button" class="back-btn">← Atrás</button><button type="submit" class="recommend-btn">✨ Encontrar recomendación</button></div>
+      </section>
+    </form>
+
+    <section class="result-card" id="result" hidden>
+      <div class="result-art">
+        <img id="result-image" src="" alt="Recomendación">
+        <span class="result-badge" id="result-type"></span>
+      </div>
+      <div class="result-content">
+        <p class="result-label">TU MATCH DE HOY ✦</p>
+        <h2 id="result-title"></h2>
+        <div class="chips"><span id="result-genre"></span><span>⏱ <span id="result-duration"></span> min</span></div>
+        <p class="description" id="result-description"></p>
+        <div class="result-actions">
+          <button type="button" class="ghost-btn" id="again-btn">Probar otra vez</button>
+          <span class="random-note">🎲 La recomendación cambia cada vez</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="message" id="message" hidden><span>⚠️</span><span id="message-text"></span></section>
+
+    <footer>Hecho con Python + Flask · MoodRecommender</footer>
+  </main>
+
+  <script src="static/site.js"></script>
+</body>
+</html>
