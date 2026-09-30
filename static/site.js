@@ -94,6 +94,55 @@ function getCandidates(excludeLast){
   return candidates;
 }
 
+async function loadRecommendationImage(title,tipo){
+  const image=document.getElementById("result-image");
+  const source=document.getElementById("result-source");
+  const fallback="static/images/"+(tipo==="peliculas"?"movie.svg":tipo==="series"?"series.svg":"music.svg");
+  image.src=fallback;
+  source.hidden=true;
+
+  const queries=tipo==="musica"
+    ?[title,title.split(" - ")[0]]
+    :[title,title+" film",title+" TV series"];
+
+  for(const query of queries){
+    try{
+      const summaryUrl="https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(query.replace(/ /g,"_"));
+      const response=await fetch(summaryUrl,{headers:{Accept:"application/json"}});
+      if(response.ok){
+        const page=await response.json();
+        if(page.thumbnail?.source){
+          image.src=page.thumbnail.source;
+          image.alt=title;
+          if(page.content_urls?.desktop?.page){
+            source.href=page.content_urls.desktop.page;
+            source.hidden=false;
+          }
+          return;
+        }
+      }
+    }catch(error){}
+  }
+
+  if(tipo==="musica"){
+    try{
+      const searchUrl="https://en.wikipedia.org/w/rest.php/v1/search/page?q="+encodeURIComponent(title)+"&limit=3";
+      const response=await fetch(searchUrl,{headers:{Accept:"application/json"}});
+      if(response.ok){
+        const data=await response.json();
+        const page=data.pages?.find(p=>p.thumbnail?.url||p.thumbnail?.source);
+        const imageUrl=page?.thumbnail?.url||page?.thumbnail?.source;
+        if(imageUrl){
+          image.src=imageUrl;
+          image.alt=title;
+          source.href=page?.key ? "https://en.wikipedia.org/wiki/"+encodeURIComponent(page.key) : "#";
+          source.hidden=source.href==="#";
+        }
+      }
+    }catch(error){}
+  }
+}
+
 function descriptionFor(item,animo,tipo){
   const kind=tipo==="peliculas"?"para ver":tipo==="series"?"para empezar a ver":"para escuchar";
   return moodText[animo]+" Una propuesta "+kind+" de género "+item[2]+".";
@@ -125,8 +174,8 @@ function recommend(isAnother){
   document.getElementById("result-duration").textContent=item[1];
   document.getElementById("result-genre").textContent=item[2];
   document.getElementById("result-description").textContent=descriptionFor(item,animo,tipo);
-  document.getElementById("result-image").src="static/images/"+(tipo==="peliculas"?"movie.svg":tipo==="series"?"series.svg":"music.svg");
   document.getElementById("result-image").alt=item[0];
+  loadRecommendationImage(item[0],tipo);
 
   againBtn.textContent="🎲 Sí, dame otra";
   message.hidden=true;
