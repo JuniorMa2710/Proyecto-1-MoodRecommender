@@ -4,7 +4,7 @@ const catalog={
   musica:window.musicCatalog||[]
 };
 
-const byMood={feliz:{peliculas:[],series:[],musica:[]},tranquilo:{peliculas:[],series:[],musica:[]},energia:{peliculas:[],series:[],musica:[]},concentrarme:{peliculas:[],series:[],musica:[]}};
+const byMood={feliz:{peliculas:[],series:[],musica:[]},tranquilo:{peliculas:[],series:[],musica:[]},energia:{peliculas:[],series:[],musica:[]},triste:{peliculas:[],series:[],musica:[]}};
 Object.entries(catalog).forEach(([tipo,items])=>{
   items.forEach(item=>byMood[item[3]][tipo].push(item));
 });
@@ -24,7 +24,7 @@ const moodText={
   feliz:"Una opción alegre y entretenida para disfrutar el momento.",
   tranquilo:"Una opción relajada y reconfortante para desconectarte.",
   energia:"Una opción con ritmo y energía para mantenerte activo.",
-  concentrarme:"Una opción ideal para acompañar una vibra tranquila y enfocada."
+  triste:"Una opción emotiva o reconfortante para acompañarte y levantarte el ánimo."
 };
 
 function updateStep(){
