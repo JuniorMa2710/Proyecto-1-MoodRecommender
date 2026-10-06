@@ -6,7 +6,9 @@ const catalog={
 
 const byMood={feliz:{peliculas:[],series:[],musica:[]},tranquilo:{peliculas:[],series:[],musica:[]},energia:{peliculas:[],series:[],musica:[]},triste:{peliculas:[],series:[],musica:[]}};
 Object.entries(catalog).forEach(([tipo,items])=>{
-  items.forEach(item=>byMood[item[3]][tipo].push(item));
+  items.forEach(item=>{
+    if(byMood[item[3]]?.[tipo]) byMood[item[3]][tipo].push(item);
+  });
 });
 
 const steps=[...document.querySelectorAll(".step")];
@@ -27,6 +29,10 @@ const moodText={
   triste:"Una opción emotiva o reconfortante para acompañarte y levantarte el ánimo."
 };
 
+const moodLabels={feliz:"😊 Feliz",tranquilo:"🌙 Tranquilo",energia:"⚡ Con energía",triste:"😔 Triste"};
+const typeLabels={peliculas:"🎬 Película",series:"📺 Serie",musica:"🎵 Música"};
+const timeLabels={30:"⏱ Hasta 30 min",60:"🕐 Hasta 60 min",all:"🕑 2 horas o más"};
+
 function updateStep(){
   steps.forEach((step,i)=>step.classList.toggle("active",i===currentStep));
   const number=currentStep+1;
@@ -38,6 +44,11 @@ function updateStep(){
 
 function selected(name){
   return document.querySelector('input[name="'+name+'"]:checked');
+}
+
+function hideResult(){
+  result.hidden=true;
+  message.hidden=true;
 }
 
 function next(){
@@ -64,13 +75,8 @@ function back(){
 
 function filterByTime(items,tipo,tiempo){
   if(tiempo==="all") return items;
-  if(tipo==="peliculas"){
-    if(tiempo==="30") return items.filter(item=>item[1]<=110);
-    if(tiempo==="60") return items.filter(item=>item[1]<=130);
-  }
-  if(tiempo==="30") return items.filter(item=>item[1]<=30);
-  if(tiempo==="60") return items.filter(item=>item[1]<=60);
-  return items;
+  const limit=Number(tiempo);
+  return items.filter(item=>Number(item[1])<=limit);
 }
 
 function getCandidates(excludeLast){
@@ -81,11 +87,6 @@ function getCandidates(excludeLast){
 
   let candidates=filterByTime(byMood[animo][tipo],tipo,tiempo);
 
-  if(candidates.length<2){
-    const wider=filterByTime(catalog[tipo],tipo,tiempo);
-    if(wider.length>=2) candidates=wider;
-  }
-
   if(excludeLast && candidates.length>1 && lastRecommendationTitle){
     const withoutLast=candidates.filter(item=>item[0]!==lastRecommendationTitle);
     if(withoutLast.length) candidates=withoutLast;
@@ -94,58 +95,20 @@ function getCandidates(excludeLast){
   return candidates;
 }
 
-async function loadRecommendationImage(title,tipo){
+function loadRecommendationImage(tipo){
   const image=document.getElementById("result-image");
-  const source=document.getElementById("result-source");
-  const fallback="static/images/"+(tipo==="peliculas"?"movie.svg":tipo==="series"?"series.svg":"music.svg");
-  image.src=fallback;
-  source.hidden=true;
-
-  const queries=tipo==="musica"
-    ?[title,title.split(" - ")[0]]
-    :[title,title+" film",title+" TV series"];
-
-  for(const query of queries){
-    try{
-      const summaryUrl="https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(query.replace(/ /g,"_"));
-      const response=await fetch(summaryUrl,{headers:{Accept:"application/json"}});
-      if(response.ok){
-        const page=await response.json();
-        if(page.thumbnail?.source){
-          image.src=page.thumbnail.source;
-          image.alt=title;
-          if(page.content_urls?.desktop?.page){
-            source.href=page.content_urls.desktop.page;
-            source.hidden=false;
-          }
-          return;
-        }
-      }
-    }catch(error){}
-  }
-
-  if(tipo==="musica"){
-    try{
-      const searchUrl="https://en.wikipedia.org/w/rest.php/v1/search/page?q="+encodeURIComponent(title)+"&limit=3";
-      const response=await fetch(searchUrl,{headers:{Accept:"application/json"}});
-      if(response.ok){
-        const data=await response.json();
-        const page=data.pages?.find(p=>p.thumbnail?.url||p.thumbnail?.source);
-        const imageUrl=page?.thumbnail?.url||page?.thumbnail?.source;
-        if(imageUrl){
-          image.src=imageUrl;
-          image.alt=title;
-          source.href=page?.key ? "https://en.wikipedia.org/wiki/"+encodeURIComponent(page.key) : "#";
-          source.hidden=source.href==="#";
-        }
-      }
-    }catch(error){}
-  }
+  image.src="static/images/"+(tipo==="peliculas"?"movie.svg":tipo==="series"?"series.svg":"music.svg");
 }
 
 function descriptionFor(item,animo,tipo){
   const kind=tipo==="peliculas"?"para ver":tipo==="series"?"para empezar a ver":"para escuchar";
   return moodText[animo]+" Una propuesta "+kind+" de género "+item[2]+".";
+}
+
+function showSelectionSummary(animo,tipo,tiempo){
+  document.getElementById("summary-mood").textContent=moodLabels[animo];
+  document.getElementById("summary-type").textContent=typeLabels[tipo];
+  document.getElementById("summary-time").textContent=timeLabels[tiempo];
 }
 
 function recommend(isAnother){
@@ -157,10 +120,9 @@ function recommend(isAnother){
   const options=getCandidates(isAnother);
 
   if(!options.length){
+    const limit=tiempo==="30"?"30 minutos":tiempo==="60"?"60 minutos":"ese tiempo";
     document.getElementById("message-text").textContent=
-      tipo==="peliculas"
-        ?"Con el tiempo elegido no encontramos una película completa que encaje. Prueba con 2 horas o más."
-        :"No encontramos algo que encaje con ese tiempo. Prueba con más tiempo disponible.";
+      "No encontramos una opción de "+typeLabels[tipo]+" que dure "+limit+" o menos para este ánimo. Prueba otro tipo de contenido o más tiempo.";
     message.hidden=false;
     result.hidden=true;
     return;
@@ -169,15 +131,14 @@ function recommend(isAnother){
   const item=options[Math.floor(Math.random()*options.length)];
   lastRecommendationTitle=item[0];
 
-  document.getElementById("result-type").textContent=tipo==="peliculas"?"Película":tipo==="series"?"Serie":"Música";
+  document.getElementById("result-type").textContent=typeLabels[tipo].replace(/^\S+\s/,"");
   document.getElementById("result-title").textContent=item[0];
   document.getElementById("result-duration").textContent=item[1];
   document.getElementById("result-genre").textContent=item[2];
   document.getElementById("result-description").textContent=descriptionFor(item,animo,tipo);
-  document.getElementById("result-image").alt=item[0];
-  loadRecommendationImage(item[0],tipo);
+  showSelectionSummary(animo,tipo,tiempo);
+  loadRecommendationImage(tipo);
 
-  againBtn.textContent="🎲 Sí, dame otra";
   message.hidden=true;
   result.hidden=false;
   result.scrollIntoView({behavior:"smooth",block:"start"});
@@ -186,8 +147,7 @@ function recommend(isAnother){
 function restart(){
   form.reset();
   lastRecommendationTitle=null;
-  result.hidden=true;
-  message.hidden=true;
+  hideResult();
   currentStep=0;
   updateStep();
   window.scrollTo({top:0,behavior:"smooth"});
@@ -204,6 +164,13 @@ form.addEventListener("submit",event=>{
 
 againBtn.addEventListener("click",()=>recommend(true));
 document.getElementById("restart-btn")?.addEventListener("click",restart);
+
+document.querySelectorAll('input[type="radio"]').forEach(input=>{
+  input.addEventListener("change",()=>{
+    lastRecommendationTitle=null;
+    hideResult();
+  });
+});
 
 document.querySelectorAll(".option").forEach(option=>{
   option.addEventListener("click",()=>option.scrollIntoView({block:"nearest",behavior:"smooth"}));
