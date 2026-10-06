@@ -17,3 +17,9 @@ button,input{font:inherit}.ambient{position:fixed;width:380px;height:380px;borde
 
 .image-source{display:inline-block;margin:2px 0 8px;color:#a7a1c7;font-size:.75rem;text-decoration:none}
 .image-source:hover{text-decoration:underline;color:#c7c0ef}
+
+[hidden]{display:none !important}
+.selection-summary{margin:4px 0 14px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}
+.summary-label{margin:0 0 8px;color:var(--muted);font-size:.68rem;font-weight:800;letter-spacing:.14em}
+.summary-chips{display:flex;flex-wrap:wrap;gap:7px}
+.summary-chips span{padding:7px 9px;border:1px solid var(--line);border-radius:999px;color:#ddd9ef;font-size:.75rem}
