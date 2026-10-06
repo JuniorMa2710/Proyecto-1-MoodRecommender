@@ -61,9 +61,9 @@
           <div><p class="mini-label">TIEMPO</p><h2>¿Cuánto tiempo tienes?</h2></div>
         </div>
         <div class="options time-options">
-          <label class="option"><input type="radio" name="tiempo" value="30"><span><strong>⏱ 30 min</strong><small>Algo rápido</small></span></label>
-          <label class="option"><input type="radio" name="tiempo" value="60"><span><strong>🕐 1 hora</strong><small>Una sesión corta</small></span></label>
-          <label class="option"><input type="radio" name="tiempo" value="all"><span><strong>🕑 2 horas o más</strong><small>Sin prisa</small></span></label>
+          <label class="option"><input type="radio" name="tiempo" value="30"><span><strong>⏱ 30 min</strong><small>Algo que dure hasta 30 minutos</small></span></label>
+          <label class="option"><input type="radio" name="tiempo" value="60"><span><strong>🕐 1 hora</strong><small>Algo que dure hasta 60 minutos</small></span></label>
+          <label class="option"><input type="radio" name="tiempo" value="all"><span><strong>🕑 2 horas o más</strong><small>Sin límite estricto de duración</small></span></label>
         </div>
         <div class="button-row"><button type="button" class="back-btn">← Atrás</button><button type="submit" class="recommend-btn">✨ Encontrar recomendación</button></div>
       </section>
@@ -71,22 +71,31 @@
 
     <section class="result-card" id="result" hidden>
       <div class="result-art">
-        <img id="result-image" src="" alt="Recomendación" loading="eager">
+        <img id="result-image" src="static/images/movie.svg" alt="Imagen local de la recomendación" loading="eager">
         <span class="result-badge" id="result-type"></span>
       </div>
       <div class="result-content">
         <p class="result-label">TU MATCH DE HOY ✦</p>
         <h2 id="result-title"></h2>
+
+        <div class="selection-summary" id="selection-summary">
+          <p class="summary-label">TU SELECCIÓN</p>
+          <div class="summary-chips">
+            <span id="summary-mood"></span>
+            <span id="summary-type"></span>
+            <span id="summary-time"></span>
+          </div>
+        </div>
+
         <div class="chips"><span id="result-genre"></span><span>⏱ <span id="result-duration"></span> min</span></div>
         <p class="description" id="result-description"></p>
-        <a class="image-source" id="result-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver fuente de la imagen</a>
         <div class="result-actions">
           <div>
             <p class="result-label">¿QUIERES OTRA RECOMENDACIÓN?</p>
             <button type="button" class="ghost-btn" id="again-btn">🎲 Sí, dame otra</button>
           </div>
           <button type="button" class="ghost-btn" id="restart-btn">↻ Cambiar opciones</button>
-          <span class="random-note">La siguiente será otra opción al azar.</span>
+          <span class="random-note">La siguiente será otra opción al azar dentro del tiempo elegido.</span>
         </div>
       </div>
     </section>
