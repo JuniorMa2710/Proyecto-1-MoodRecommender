@@ -33,3 +33,29 @@ La web pública es completamente estática: funciona con HTML, CSS y JavaScript,
 El repositorio incluye un workflow de GitHub Actions que publica el contenido estático en GitHub Pages cada vez que se actualiza la rama `main`.
 
 Para la cuenta gratuita, el repositorio debe ser público para usar GitHub Pages.
+
+## 🧪 Laboratorio 3: avance y pruebas
+
+### Commit exacto del avance corregido
+El avance corregido de la aplicación quedó registrado en el commit:
+
+**235a93f71ccb7ffb38403543f2a38f4f15368026**
+
+Este commit incluye el control del tiempo, el ocultamiento de resultados al cambiar opciones, el uso de imágenes locales y el resumen de las selecciones.
+
+### Opciones probadas y recomendación obtenida
+
+- **Feliz + Película + 30 min:** se obtuvo **Piper (6 min)**.
+- **Tranquilo + Serie + 30 min:** se obtuvo una serie de **30 min o menos**.
+- **Triste + Música + 30 min:** se obtuvo una opción musical de **30 min o menos**.
+- **Feliz + Película + 2 horas o más:** se obtuvo una película del catálogo que entra en el tiempo disponible.
+
+Las recomendaciones se eligen al azar, por lo que pueden cambiar al repetir la misma prueba. Lo importante es que nunca se muestra una recomendación que supere el tiempo seleccionado.
+
+### Correcciones realizadas antes de entregar Proyecto 1
+
+- El tiempo ahora se respeta de forma estricta: 30 minutos significa máximo 30 minutos y 60 minutos significa máximo 60 minutos.
+- Al cambiar cualquier opción, el resultado anterior se oculta para evitar confusión.
+- Los bloques de resultado y mensajes permanecen ocultos hasta que son necesarios.
+- Las imágenes de las recomendaciones ahora se cargan únicamente desde `static/images/`, dentro del repositorio.
+- El resultado muestra un resumen del **ánimo, tipo de contenido y tiempo** elegidos.
