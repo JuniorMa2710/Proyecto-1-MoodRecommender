@@ -95,9 +95,64 @@ function getCandidates(excludeLast){
   return candidates;
 }
 
-function loadRecommendationImage(tipo){
+function escapeSvgText(text){
+  return String(text).replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"
+  })[char]);
+}
+
+function wrapPosterTitle(title,maxLength=18){
+  const words=String(title).split(" ");
+  const lines=[];
+  let line="";
+  words.forEach(word=>{
+    const test=(line+" "+word).trim();
+    if(test.length>maxLength && line){
+      lines.push(line);
+      line=word;
+    }else{
+      line=test;
+    }
+  });
+  if(line) lines.push(line);
+  return lines.slice(0,4);
+}
+
+function posterPalette(title,tipo){
+  const palettes={
+    peliculas:[["#24113f","#6f2dbd"],["#0f2027","#2c5364"],["#3b0d11","#9b2226"],["#14213d","#fca311"]],
+    series:[["#102542","#1b998b"],["#1f1c2c","#928dab"],["#172a3a","#09bc8a"],["#2d1e2f","#e84855"]],
+    musica:[["#240046","#9d4edd"],["#001219","#0a9396"],["#3d0c11","#e85d04"],["#1b263b","#778da9"]]
+  };
+  let hash=0;
+  for(const char of title) hash=(hash*31+char.charCodeAt(0))>>>0;
+  const list=palettes[tipo]||palettes.peliculas;
+  return list[hash%list.length];
+}
+
+function loadRecommendationImage(item,tipo){
   const image=document.getElementById("result-image");
-  image.src="static/images/"+(tipo==="peliculas"?"movie.svg":tipo==="series"?"series.svg":"music.svg");
+  const [start,end]=posterPalette(item[0],tipo);
+  const icon=tipo==="peliculas"?"🎬":tipo==="series"?"📺":"🎵";
+  const label=tipo==="peliculas"?"PELÍCULA":tipo==="series"?"SERIE":"MÚSICA";
+  const lines=wrapPosterTitle(item[0]);
+  const titleSvg=lines.map((line,index)=>
+    '<text x="50%" y="'+(255+index*42)+'" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="30" font-weight="800">'+escapeSvgText(line)+'</text>'
+  ).join("");
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">'+
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+start+'"/><stop offset="1" stop-color="'+end+'"/></linearGradient></defs>'+
+    '<rect width="600" height="900" rx="28" fill="url(#g)"/>'+
+    '<circle cx="300" cy="135" r="74" fill="white" fill-opacity=".10"/>'+
+    '<text x="300" y="165" text-anchor="middle" font-size="76">'+icon+'</text>'+
+    '<text x="300" y="205" text-anchor="middle" fill="white" fill-opacity=".72" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="4">'+label+'</text>'+
+    titleSvg+
+    '<line x1="90" y1="470" x2="510" y2="470" stroke="white" stroke-opacity=".22"/>'+
+    '<text x="300" y="525" text-anchor="middle" fill="white" fill-opacity=".88" font-family="Arial,sans-serif" font-size="21">'+escapeSvgText(item[2])+'</text>'+
+    '<text x="300" y="570" text-anchor="middle" fill="white" fill-opacity=".65" font-family="Arial,sans-serif" font-size="18">'+escapeSvgText(item[1])+' min</text>'+
+    '<text x="300" y="815" text-anchor="middle" fill="white" fill-opacity=".42" font-family="Arial,sans-serif" font-size="16" letter-spacing="3">MOODRECOMMENDER</text>'+
+    '</svg>';
+  image.src="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(svg);
+  image.alt="Imagen de "+item[0];
 }
 
 function descriptionFor(item,animo,tipo){
@@ -137,7 +192,7 @@ function recommend(isAnother){
   document.getElementById("result-genre").textContent=item[2];
   document.getElementById("result-description").textContent=descriptionFor(item,animo,tipo);
   showSelectionSummary(animo,tipo,tiempo);
-  loadRecommendationImage(tipo);
+  loadRecommendationImage(item,tipo);
 
   message.hidden=true;
   result.hidden=false;
