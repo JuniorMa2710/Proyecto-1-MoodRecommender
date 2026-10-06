@@ -50,5 +50,11 @@ window.movieCatalog=[
 ["A Beautiful Day in the Neighborhood",109,"Drama · Biográfica","triste"],
 ["The Boy Who Harnessed the Wind",113,"Drama · Inspiradora","triste"],
 ["The Pursuit of Happyness",117,"Drama · Inspiradora","triste"],
-["The Hidden Life of Trees",82,"Documental · Naturaleza","triste"]
+["The Hidden Life of Trees",82,"Documental · Naturaleza","triste"],
+["Piper",6,"Cortometraje · Animación","feliz"],
+["Bao",8,"Cortometraje · Animación","tranquilo"],
+["Kitbull",9,"Cortometraje · Animación","triste"],
+["Paperman",7,"Cortometraje · Animación","tranquilo"],
+["La Luna",7,"Cortometraje · Animación","feliz"],
+["For the Birds",3,"Cortometraje · Animación","feliz"]
 ];
