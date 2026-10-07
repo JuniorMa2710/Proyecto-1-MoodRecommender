@@ -73,10 +73,81 @@ function back(){
   }
 }
 
-function filterByTime(items,tipo,tiempo){
-  if(tiempo==="all") return items;
-  const limit=Number(tiempo);
-  return items.filter(item=>Number(item[1])<=limit);
+function targetMinutes(tiempo){
+  if(tiempo==="30") return 30;
+  if(tiempo==="60") return 60;
+  return 120;
+}
+
+function buildMusicSession(items,tiempo){
+  const target=targetMinutes(tiempo);
+  const pool=[...items].sort(()=>Math.random()-.5);
+  const tracks=[];
+  let total=0;
+
+  for(const item of pool){
+    if(total>=target*.9) break;
+    if(total+Number(item[1])<=target+10){
+      tracks.push(item);
+      total+=Number(item[1]);
+    }
+  }
+
+  // Si el catálogo no alcanza el objetivo, completa la sesión repitiendo
+  // canciones solo después de haber usado las disponibles.
+  let index=0;
+  while(tracks.length && total<target*.85 && index<pool.length*4){
+    const item=pool[index%pool.length];
+    if(total+Number(item[1])<=target+10){
+      tracks.push(item);
+      total+=Number(item[1]);
+    }
+    index++;
+  }
+
+  if(!tracks.length) return null;
+  const names=tracks.slice(0,5).map(item=>item[0].split(" - ")[0]);
+  return [
+    "Playlist "+moodLabels[selected("animo")?.value].replace(/^\S+\s/,"")+" · "+total+" min",
+    total,
+    tracks.length+" canciones · "+names.join(", ")+(tracks.length>5?"…":""),
+    selected("animo")?.value
+  ];
+}
+
+function buildSeriesSession(items,tiempo){
+  const target=targetMinutes(tiempo);
+  const plans=items.map(item=>{
+    const episode=Number(item[1]);
+    let count=Math.max(1,Math.round(target/episode));
+    if(tiempo!=="all") count=Math.max(1,Math.floor(target/episode));
+    const total=episode*count;
+    const distance=Math.abs(target-total);
+    return {item,count,total,distance};
+  }).filter(plan=>tiempo==="all" ? plan.total>=90 : plan.total<=target);
+
+  if(!plans.length) return null;
+  plans.sort((a,b)=>a.distance-b.distance);
+  const bestDistance=plans[0].distance;
+  const best=plans.filter(plan=>plan.distance<=bestDistance+10);
+  const plan=best[Math.floor(Math.random()*best.length)];
+  return [
+    plan.item[0],
+    plan.total,
+    plan.count+" episodio"+(plan.count===1?"":"s")+" · "+plan.item[2],
+    plan.item[3]
+  ];
+}
+
+function movieCandidates(items,tiempo){
+  if(tiempo==="30") return items.filter(item=>Number(item[1])<=30);
+  if(tiempo==="60"){
+    const close=items.filter(item=>Number(item[1])>30 && Number(item[1])<=60);
+    return close.length ? close : items.filter(item=>Number(item[1])<=60);
+  }
+  // Para 2 h o más prioriza largometrajes que aprovechen el tiempo.
+  const long=items.filter(item=>Number(item[1])>=90);
+  return long.length ? long : items;
 }
 
 function getCandidates(excludeLast){
@@ -85,7 +156,17 @@ function getCandidates(excludeLast){
   const tiempo=selected("tiempo")?.value;
   if(!animo||!tipo||!tiempo) return [];
 
-  let candidates=filterByTime(byMood[animo][tipo],tipo,tiempo);
+  let candidates=byMood[animo][tipo];
+
+  if(tipo==="peliculas"){
+    candidates=movieCandidates(candidates,tiempo);
+  }else if(tipo==="series"){
+    const session=buildSeriesSession(candidates,tiempo);
+    candidates=session?[session]:[];
+  }else if(tipo==="musica"){
+    const session=buildMusicSession(candidates,tiempo);
+    candidates=session?[session]:[];
+  }
 
   if(excludeLast && candidates.length>1 && lastRecommendationTitle){
     const withoutLast=candidates.filter(item=>item[0]!==lastRecommendationTitle);
@@ -175,9 +256,9 @@ function recommend(isAnother){
   const options=getCandidates(isAnother);
 
   if(!options.length){
-    const limit=tiempo==="30"?"30 minutos":tiempo==="60"?"60 minutos":"ese tiempo";
+    const limit=tiempo==="30"?"30 minutos":tiempo==="60"?"60 minutos":"2 horas o más";
     document.getElementById("message-text").textContent=
-      "No encontramos una opción de "+typeLabels[tipo]+" que dure "+limit+" o menos para este ánimo. Prueba otro tipo de contenido o más tiempo.";
+      "No encontramos una opción de "+typeLabels[tipo]+" adecuada para aprovechar "+limit+" con este ánimo. Prueba otro tipo de contenido o tiempo.";
     message.hidden=false;
     result.hidden=true;
     return;
